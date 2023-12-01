@@ -5,7 +5,7 @@ import { Generable } from '../Components';
 import { ReusableCommandShape } from '../Components/Commands/types/Command.types';
 import { ReusableExecutor } from '../Components/Executors/exports/ReusableExecutor';
 import { ReusableExecutorsShape } from '../Components/Executors/types/ReusableExecutor.types';
-import { Job } from '../Components/Job';
+import { BuildJobConfig } from '../Components/Job';
 import { JobsShape } from '../Components/Job/types/Job.types';
 import { CustomParametersList } from '../Components/Parameters';
 import { Parameterized } from '../Components/Parameters/exports/Parameterized';
@@ -43,7 +43,7 @@ export class Config
   /**
    * Jobs are collections of steps. All of the steps in the job are executed in a single unit, either within a fresh container or VM.
    */
-  jobs: Job[] = [];
+  jobs: BuildJobConfig[] = [];
   /**
    * A command definition defines a sequence of steps as a map to be executed in a job, enabling you to reuse a single command definition across multiple jobs.
    */
@@ -75,7 +75,7 @@ export class Config
    */
   constructor(
     setup = false,
-    jobs?: Job[],
+    jobs?: BuildJobConfig[],
     workflows?: Workflow[],
     executors?: ReusableExecutor[],
     commands?: ReusableCommand[],
@@ -132,7 +132,7 @@ export class Config
    * Add a Job to the current Config. Chainable
    * @param job - Injectable Job
    */
-  addJob(job: Job): this {
+  addJob(job: BuildJobConfig): this {
     this.jobs.push(job);
 
     return this;

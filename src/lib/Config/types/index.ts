@@ -1,7 +1,7 @@
 import { ReusableCommandShape } from '../../Components/Commands/types/Command.types';
 import { ReusableExecutor } from '../../Components/Executors/exports/ReusableExecutor';
 import { ReusableExecutorsShape } from '../../Components/Executors/types/ReusableExecutor.types';
-import { Job } from '../../Components/Job';
+import { BuildJobConfig } from '../../Components/Job';
 import { JobsShape } from '../../Components/Job/types/Job.types';
 import { CustomParametersList } from '../../Components/Parameters';
 import { ParameterShape } from '../../Components/Parameters/types';
@@ -29,7 +29,7 @@ export type ConfigOrbImport = Record<string, string>;
  */
 export type CircleCIConfigObject = {
   version: ConfigVersion;
-  jobs?: Job[];
+  jobs?: BuildJobConfig[];
   executors?: ReusableExecutor[];
   commands?: ReusableCommand[];
   workflows?: Workflow[];
@@ -61,7 +61,7 @@ export type UnknownConfigShape = {
 };
 
 export type ConfigDependencies = {
-  jobList: Job[];
+  jobList: BuildJobConfig[];
   workflows: Workflow[];
   executorList?: ReusableExecutor[];
   commandList?: ReusableCommand[];

@@ -46,7 +46,7 @@ export * as orb from './lib/Orb';
 export * as mapping from './lib/Config/exports/Mapping';
 
 // Top-level exports
-export { Job } from './lib/Components/Job';
+export { BuildJobConfig as Job } from './lib/Components/Job';
 export { Config } from './lib/Config';
 export { Pipeline } from './lib/Config/Pipeline';
 export { Workflow } from './lib/Components/Workflow/exports/Workflow';

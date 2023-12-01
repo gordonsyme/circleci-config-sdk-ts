@@ -1,4 +1,4 @@
-import { Job } from '..';
+import { BuildJobConfig } from '..';
 import { Command } from '../../Commands/exports/Command';
 import { CustomParametersList } from '../../Parameters';
 import { Parameterized } from '../../Parameters/exports/Parameterized';
@@ -15,7 +15,7 @@ import {
  * more control and recyclability to the workflow.
  */
 class ParameterizedJob
-  extends Job
+  extends BuildJobConfig
   implements Parameterized<JobParameterLiteral>
 {
   /**

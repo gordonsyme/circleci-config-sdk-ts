@@ -1,6 +1,7 @@
+import { Pair } from 'yaml';
 import { Generable } from '../..';
 import { GenerableType } from '../../../Config/exports/Mapping';
-import { Job } from '../../Job';
+import { BuildJobConfig, JobBase } from '../../Job';
 import { When } from '../../Logic';
 import { Conditional } from '../../Logic/exports/Conditional';
 import {
@@ -20,11 +21,8 @@ export class Workflow implements Generable, Conditional {
    * The name of the Workflow.
    */
   name: string;
-
-  /**
-   * The jobs to execute when this Workflow is triggered.
-   */
-  jobs: WorkflowJobAbstract[] = [];
+  jobs: JobBase[] = []
+  adj: Map<string, Set<string>> = new Map();
 
   /**
    * The conditional statement that will be evaluated to determine whether to trigger this workflow.
@@ -38,7 +36,7 @@ export class Workflow implements Generable, Conditional {
    */
   constructor(
     name: string,
-    jobs?: Array<Job | WorkflowJobAbstract>,
+    jobs?: Array<BuildJobConfig | WorkflowJobAbstract>,
     when?: When,
   ) {
     this.name = name;
@@ -46,7 +44,7 @@ export class Workflow implements Generable, Conditional {
 
     if (jobs) {
       this.jobs = jobs.map((job) =>
-        job instanceof Job ? new WorkflowJob(job) : job,
+        job instanceof BuildJobConfig ? new WorkflowJob(job) : job,
       );
     }
   }
@@ -80,19 +78,19 @@ export class Workflow implements Generable, Conditional {
     return workflowContents;
   }
 
-  /**
-   * Add a Job to the current Workflow. Chainable
-   */
-  addJob(job: Job, parameters?: WorkflowJobParameters): this {
-    this.jobs.push(new WorkflowJob(job, parameters));
-    return this;
+  private addEdges(...edges: Pair<JobBase, JobBase>[]) {
+    /*  (reduce (fn [acc dep]
+            (update-in acc [:adj dep] (fnil conj #{}) (:name job)))
+          wflow
+          deps))
+    */
+    edges.forEach(element => {
+      this.adj
+    });
   }
 
-  /**
-   * Add a Approval to the current Workflow. Chainable
-   */
-  addJobApproval(name: string, parameters?: WorkflowJobParameters): this {
-    this.jobs.push(new WorkflowJobApproval(name, parameters));
+  addJob(job: JobBase, dependencies?: JobBase[]): this {
+    this.addEdges();
     return this;
   }
 

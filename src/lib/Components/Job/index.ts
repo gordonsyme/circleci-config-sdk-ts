@@ -1,5 +1,6 @@
 import { GenerableType } from '../../Config/exports/Mapping';
 import { Command } from '../Commands/exports/Command';
+import { Executor } from '../Executors/exports/Executor';
 import { Executable } from '../Executors/types/ExecutorParameters.types';
 import { Generable } from '../index';
 import {
@@ -14,10 +15,65 @@ import {
   JobsShape,
 } from './types/Job.types';
 
+export interface JobBase {
+  name: string;
+  type: string;
+  context: Set<string>;
+
+  getImplementation(): Generable | undefined;
+}
+
+export class BuildJob implements JobBase {
+  name: string;
+  context: Set<string> = new Set();
+  type: string;
+  implementation: BuildJobConfig;
+
+  constructor(name: string, implementation: BuildJobConfig) {
+    this.name = name;
+    this.implementation = implementation;
+    this.type = "build";
+  }
+
+  getImplementation(): Generable {
+    return this.implementation;
+  }
+
+  withContext(ctxt: string): BuildJob {
+    this.context.add(ctxt);
+    return this;
+  }
+
+  withConfig(c: BuildJobConfig): BuildJob {
+    this.implementation = c;
+    return this;
+  }
+}
+
+export class ApprovalJob implements JobBase {
+  name: string;
+  type: string;
+  context: Set<string> = new Set();
+
+  constructor(name: string) {
+    this.name = name;
+    this.type = "approval";
+  }
+
+  getImplementation(): undefined {
+      return undefined;
+  }
+
+  withContext(ctxt: string): this {
+    this.context.add(ctxt);
+    return this;
+  }
+}
+
 /**
  * Jobs define a collection of steps to be run within a given executor, and are orchestrated using Workflows.
  */
-export class Job implements Generable, Executable {
+export class BuildJobConfig implements Generable, Executable {
   /**
    * The name of the current Job.
    */
