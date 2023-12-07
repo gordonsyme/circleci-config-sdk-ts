@@ -2,8 +2,6 @@ import { Pair } from 'yaml';
 import { Generable } from '../..';
 import { GenerableType } from '../../../Config/exports/Mapping';
 import { BuildJobConfig } from '../../Job';
-import { When } from '../../Logic';
-import { Conditional } from '../../Logic/exports/Conditional';
 import {
   WorkflowContentsShape,
   WorkflowJobParameters,

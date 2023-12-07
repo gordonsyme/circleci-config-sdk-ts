@@ -5,7 +5,7 @@ import { JobsShape } from '../../Components/Job/types/Job.types';
 import { CustomParametersList } from '../../Components/Parameters';
 import { ParameterShape } from '../../Components/Parameters/types';
 import { AnyParameterLiteral } from '../../Components/Parameters/types/CustomParameterLiterals.types';
-import { Workflow } from '../../Components/Workflow/exports/Workflow';
+import { Workflow } from '../../Components/Workflow/exports/NewWorkflow';
 import { WorkflowsShape } from '../../Components/Workflow/types/Workflow.types';
 import { OrbImport } from '../../Orb';
 import { OrbImportsShape } from '../../Orb/types/Orb.types';
@@ -27,8 +27,8 @@ export type ConfigOrbImport = Record<string, string>;
  */
 export type CircleCIConfigObject = {
   version: ConfigVersion;
-  jobs?: BuildJobConfig[];
-  workflows?: Workflow[];
+  jobs?: Map<string, BuildJobConfig>;
+  workflows?: Map<string, Workflow>;
   orbs?: OrbImport[];
 };
 

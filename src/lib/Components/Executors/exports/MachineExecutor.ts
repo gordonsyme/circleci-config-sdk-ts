@@ -53,4 +53,29 @@ export class MachineExecutor extends Executor<MachineResourceClass> {
     this.docker_layer_caching = enabled;
     return this;
   }
+
+  static from(d: any, resource_class: string): MachineExecutor {
+    if (!validateExecutorData(d)) {
+      throw new Error("Invalid machine executor config data");
+    }
+
+    return new MachineExecutor(
+      resource_class as MachineResourceClass | undefined,
+      d.image,
+      d.docker_layer_caching);
+  }
+}
+
+function validateExecutorData(d: any): d is MachineExecutorShape {
+  const {image, docker_layer_caching} = d;
+
+  if (typeof(image) !== 'string') {
+    return false;
+  }
+
+  if (docker_layer_caching && typeof(docker_layer_caching) !== 'boolean') {
+    return false;
+  }
+
+  return true;
 }

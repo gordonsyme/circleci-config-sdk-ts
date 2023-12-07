@@ -24,14 +24,29 @@ describe("New Config SDK", () => {
       .addJob(approve, [test])
       .addJob(deploy, [build, test]);
 
-    expect(workflow.makeYamlGoNow()).toBeDefined();
+    console.log(JSON.stringify(workflow.generate()));
+    expect(workflow.generate()).toBeDefined();
   })
 
   it("can load a simple config from YAML", () => {
     const config = readConfigFile(".circleci/test-config.yml");
 
-    console.log(config.jobs[0]);
-    expect(config.jobs.length).toBeGreaterThan(0);
+    const buildConfig = config.getJobConfig("build");
+    if (!buildConfig) {
+      throw new Error("Expected a job called \"build\"");
+    }
+
+    const build = new BuildJob("build")
+      .withConfig(buildConfig)
+      .withContext("org-global");
+
+    const workflow = new Workflow("breaking-workspaces")
+      .addJob(build);
+    
+    console.log("workflow is: " + JSON.stringify(workflow.generate()));
+
+    expect(workflow.adj.size).toBe(1);
+    expect(workflow.generate()).toBeDefined();
   });
 
   it("can load a job from YAML and use it in a workflow created from code", () => {

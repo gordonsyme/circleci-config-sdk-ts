@@ -22,7 +22,7 @@ describe('Instantiate Docker Job', () => {
   it('Add job to config and validate', () => {
     const myConfig = new CircleCI.Config();
     myConfig.addJob(job);
-    expect(myConfig.jobs.length).toBeGreaterThan(0);
+    expect(myConfig.jobs.size).toBeGreaterThan(0);
   });
 });
 
@@ -60,7 +60,7 @@ describe('Instantiate Parameterized Docker Job With Custom Parameters', () => {
   it('Add job to config and validate', () => {
     const myConfig = new CircleCI.Config();
     myConfig.addJob(job);
-    expect(myConfig.jobs.length).toBeGreaterThan(0);
+    expect(myConfig.jobs.size).toBeGreaterThan(0);
   });
 });
 

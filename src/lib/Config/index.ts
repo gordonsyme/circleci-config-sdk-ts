@@ -9,7 +9,7 @@ import { JobsShape } from '../Components/Job/types/Job.types';
 import { CustomParametersList } from '../Components/Parameters';
 import { Parameterized } from '../Components/Parameters/exports/Parameterized';
 import { PipelineParameterLiteral } from '../Components/Parameters/types/CustomParameterLiterals.types';
-import { Workflow } from '../Components/Workflow/exports/Workflow';
+import { Job, Workflow } from '../Components/Workflow/exports/NewWorkflow';
 import { WorkflowsShape } from '../Components/Workflow/types/Workflow.types';
 import { OrbImport } from '../Orb/exports/OrbImport';
 import { OrbImportsShape } from '../Orb/types/Orb.types';
@@ -37,11 +37,11 @@ export class Config
   /**
    * Jobs are collections of steps. All of the steps in the job are executed in a single unit, either within a fresh container or VM.
    */
-  jobs: BuildJobConfig[] = [];
+  jobs: Map<string, BuildJobConfig>;
   /**
    * A Workflow is comprised of one or more uniquely named jobs.
    */
-  workflows: Workflow[] = [];
+  workflows: Map<string, Workflow>;
   /**
    * A parameter allows custom data to be passed to a pipeline.
    */
@@ -65,14 +65,14 @@ export class Config
    */
   constructor(
     setup = false,
-    jobs?: BuildJobConfig[],
-    workflows?: Workflow[],
+    jobs?: Map<string, BuildJobConfig>,
+    workflows?: Map<string, Workflow>,
     parameters?: CustomParametersList<PipelineParameterLiteral>,
     orbs?: OrbImport[],
   ) {
     this.setup = setup;
-    this.jobs = jobs || [];
-    this.workflows = workflows || [];
+    this.jobs = jobs || new Map();
+    this.workflows = workflows || new Map();
     this.parameters = parameters;
     this.orbs = orbs;
   }
@@ -82,8 +82,16 @@ export class Config
    * @param workflow - Injectable Workflow
    */
   addWorkflow(workflow: Workflow): this {
-    this.workflows.push(workflow);
+    this.workflows.set(workflow.name, workflow);
     return this;
+  }
+
+  getJobConfig(name: string): BuildJobConfig | undefined {
+    return this.jobs.get(name);
+  }
+
+  getJob(workflowName: string, jobName: string): Job | undefined {
+    return this.workflows.get(workflowName)?.jobs.find((j) => { j.name === jobName });
   }
 
   /**
@@ -91,7 +99,7 @@ export class Config
    * @param job - Injectable Job
    */
   addJob(job: BuildJobConfig): this {
-    this.jobs.push(job);
+    this.jobs.set(job.name, job);
 
     return this;
   }
@@ -145,11 +153,11 @@ export class Config
    */
   generate(flatten?: boolean): CircleCIConfigShape {
     const generatedWorkflows = generateList<WorkflowsShape>(
-      this.workflows,
+      Array.from(this.workflows.values()),
       {},
       flatten,
     );
-    const generatedJobs = generateList<JobsShape>(this.jobs, {}, flatten);
+    const generatedJobs = generateList<JobsShape>(Array.from(this.jobs.values()), {}, flatten);
     const generatedParameters = this.parameters?.generate();
     const generatedOrbs = generateList<OrbImportsShape>(this.orbs);
 
@@ -232,14 +240,21 @@ export function readConfigFile(path: string): Config {
     // data structure and instantiates the correct object for each of the
     // types of data stored in a .circleci/config.yml
     const cfg = YAML.parse(fs.readFileSync(path, {encoding: "UTF-8"})) as CircleCIConfigShape;
-
-    const jobs = Object.keys(cfg.jobs).reduce((acc, k) => {
-      acc.push(BuildJobConfig.from(k, cfg.jobs[k]));
-      return acc
+;;
+    const jobConfigs = Object.keys(cfg.jobs).reduce((acc, k) => {
+      acc.set(k, BuildJobConfig.from(k, cfg.jobs[k]));
+      return acc;
     },
-      new Array<BuildJobConfig>());
+    new Map<string, BuildJobConfig>());
 
-    return new Config(false, jobs);
+    const workflows = Object.keys(cfg.workflows).reduce(
+      (acc, k) => {
+        acc.set(k, Workflow.from(k, cfg.workflows[k], jobConfigs));
+        return acc;
+      },
+      new Map<string, Workflow>());
+
+    return new Config(false, jobConfigs, workflows);
   }
   else {
     throw new Error('Unsupported environment');

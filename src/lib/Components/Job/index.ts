@@ -141,26 +141,15 @@ export class BuildJobConfig implements Generable, Executable {
       throw new Error("Invalid job config data");
     }
 
-    let executor: Executor = new DockerExecutor("DON'T DO THIS");
-    const data = d as JobCommonContents & ExecutorShape;
-    if (Object.hasOwn(d, 'docker')) {
-      executor = DockerExecutor.from(data.docker, data.resource_class);
-    }
-    /*else if (Object.hasOwn(d, 'machine')) {
-      executor = MachineExecutor.from(data.machine, data.resource_class);
-    }
-    else if (Object.hasOwn(d, 'macos')) {
-      executor = MacOSExecutor.from(data.macos, data.resource_class);
-    }
-    else {
-      throw new Error("Invalid job config data");
-    }*/
+    const executor = executorFrom(d);
 
-    const config = new BuildJobConfig(n, executor);
-    d.steps.forEach((step) => {
-      config.addStep(commandFrom(step));
+    const steps = d.steps.map((step) => {
+      return commandFrom(step);
     });
-    return config;
+
+    const options = optionsFrom(d);
+
+    return new BuildJobConfig(n, executor, steps, options);
   }
 }
 
@@ -168,7 +157,29 @@ function validateJobData(d: any): d is JobContentsShape {
   if (!Array.isArray(d.steps)) {
     return false;
   }
+
   return true;
+}
+
+function executorFrom(d: any): Executor {
+  const { docker,
+    machine,
+    macos,
+    resource_class } = d as JobCommonContents & ExecutorShape;
+
+    if (docker) {
+      return DockerExecutor.from(docker, resource_class);
+    }
+
+    if (machine) {
+      return MachineExecutor.from(machine, resource_class);
+    }
+
+    if (macos) {
+      return MacOSExecutor.from(macos, resource_class);
+    }
+    
+    throw new Error("Invalid job config data");
 }
 
 function commandFrom(d: any): Command {
@@ -223,6 +234,41 @@ function commandFrom(d: any): Command {
     return StoreTestResults.from(d);
   }
 
-  console.log("bad command data:" + d);
   throw new Error("Invalid command config data");
+}
+
+function optionsFrom(d: any): JobOptionalProperties {
+  const { parallelism,
+    shell,
+    working_directory,
+    environment } = d;
+  
+  if (parallelism && typeof(parallelism) !== 'number') {
+    throw new Error("Invalid parallelism config data");
+  }
+
+  if (shell && typeof(shell) !== 'string') {
+    throw new Error("Invalid shell config data");
+  }
+
+  if (working_directory && typeof(working_directory) !== 'string') {
+    throw new Error("Invalid working_directory config data");
+  }
+  // FIXME validate environment properly
+
+  let ret = {} as JobOptionalProperties;
+  if (parallelism) {
+    ret = {...ret, parallelism: parallelism};
+  }
+  if (shell) {
+    ret = {...ret, shell: shell};
+  }
+  if (working_directory) {
+    ret = {...ret, working_directory: working_directory};
+  }
+  if (environment) {
+    ret = {...ret, environment: environment};
+  }
+
+  return ret;
 }
