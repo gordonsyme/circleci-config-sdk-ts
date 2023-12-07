@@ -29,6 +29,35 @@ export class AddSSHKeys implements Command {
   get generableType(): GenerableType {
     return GenerableType.ADD_SSH_KEYS;
   }
+
+  static from(d: any): AddSSHKeys {
+    if (!validateData(d)) {
+      throw new Error("Invalid add_ssh_key command config");
+    }
+
+    return new AddSSHKeys(d.add_ssh_keys);
+  }
+}
+
+function validateData(d: any): d is AddSSHKeysCommandShape {
+  const {add_ssh_keys} = d;
+  if (!add_ssh_keys) {
+    return false;
+  }
+
+  const {fingerprints} = add_ssh_keys;
+
+  if (!Array.isArray(fingerprints)) {
+    return false;
+  }
+
+  for (const fingerprint of fingerprints) {
+    if (typeof(fingerprint) !== 'string') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**

@@ -38,6 +38,35 @@ export class Checkout implements Command {
   get generableType(): GenerableType {
     return GenerableType.CHECKOUT;
   }
+
+  static from(d: any): Checkout {
+    if (validateShorthandData(d)) {
+      return new Checkout();
+    }
+
+    if (validateData(d)) {
+      return new Checkout(d.checkout);
+    }
+
+    throw new Error("Invalid checkout command config");
+  }
+}
+
+function validateShorthandData(d: any): d is 'checkout' {
+  return d === 'checkout';
+}
+
+function validateData(d: any): d is CheckoutCommandShape {
+  const {checkout} = d;
+  if (!checkout) {
+    return false;
+  }
+
+  if (typeof(checkout.path) !== 'string') {
+    return false;
+  }
+
+  return true;
 }
 
 /**

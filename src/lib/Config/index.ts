@@ -3,14 +3,12 @@ import * as YAML from 'yaml';
 import { version as SDKVersion } from '../../../package-version.json';
 import { Generable } from '../Components';
 import { ReusableCommandShape } from '../Components/Commands/types/Command.types';
-import { ReusableExecutor } from '../Components/Executors/exports/ReusableExecutor';
 import { ReusableExecutorsShape } from '../Components/Executors/types/ReusableExecutor.types';
 import { BuildJobConfig } from '../Components/Job';
 import { JobsShape } from '../Components/Job/types/Job.types';
 import { CustomParametersList } from '../Components/Parameters';
 import { Parameterized } from '../Components/Parameters/exports/Parameterized';
 import { PipelineParameterLiteral } from '../Components/Parameters/types/CustomParameterLiterals.types';
-import { ReusableCommand } from '../Components/Reusable';
 import { Workflow } from '../Components/Workflow/exports/Workflow';
 import { WorkflowsShape } from '../Components/Workflow/types/Workflow.types';
 import { OrbImport } from '../Orb/exports/OrbImport';
@@ -37,17 +35,9 @@ export class Config
    */
   version: ConfigVersion = 2.1;
   /**
-   * Reusable executors to be referenced from jobs.
-   */
-  executors?: ReusableExecutor[];
-  /**
    * Jobs are collections of steps. All of the steps in the job are executed in a single unit, either within a fresh container or VM.
    */
   jobs: BuildJobConfig[] = [];
-  /**
-   * A command definition defines a sequence of steps as a map to be executed in a job, enabling you to reuse a single command definition across multiple jobs.
-   */
-  commands?: ReusableCommand[];
   /**
    * A Workflow is comprised of one or more uniquely named jobs.
    */
@@ -77,16 +67,12 @@ export class Config
     setup = false,
     jobs?: BuildJobConfig[],
     workflows?: Workflow[],
-    executors?: ReusableExecutor[],
-    commands?: ReusableCommand[],
     parameters?: CustomParametersList<PipelineParameterLiteral>,
     orbs?: OrbImport[],
   ) {
     this.setup = setup;
     this.jobs = jobs || [];
     this.workflows = workflows || [];
-    this.executors = executors;
-    this.commands = commands;
     this.parameters = parameters;
     this.orbs = orbs;
   }
@@ -97,34 +83,6 @@ export class Config
    */
   addWorkflow(workflow: Workflow): this {
     this.workflows.push(workflow);
-    return this;
-  }
-
-  /**
-   * Add a Custom Command to the current Config. Chainable
-   * @param command - Injectable command
-   */
-  addReusableCommand(command: ReusableCommand): this {
-    if (!this.commands) {
-      this.commands = [command];
-    } else {
-      this.commands.push(command);
-    }
-
-    return this;
-  }
-
-  /**
-   * Add a Workflow to the current Config. Chainable
-   * @param workflow - Injectable Workflow
-   */
-  addReusableExecutor(executor: ReusableExecutor): this {
-    if (!this.executors) {
-      this.executors = [executor];
-    } else {
-      this.executors.push(executor);
-    }
-
     return this;
   }
 
@@ -192,14 +150,6 @@ export class Config
       flatten,
     );
     const generatedJobs = generateList<JobsShape>(this.jobs, {}, flatten);
-    const generatedExecutors = generateList<ReusableExecutorsShape>(
-      this.executors,
-    );
-    const generatedCommands = generateList<ReusableCommandShape>(
-      this.commands,
-      undefined,
-      flatten,
-    );
     const generatedParameters = this.parameters?.generate();
     const generatedOrbs = generateList<OrbImportsShape>(this.orbs);
 
@@ -207,8 +157,6 @@ export class Config
       version: this.version,
       setup: this.setup,
       parameters: generatedParameters,
-      commands: generatedCommands,
-      executors: generatedExecutors,
       jobs: generatedJobs,
       workflows: generatedWorkflows,
       orbs: generatedOrbs,
@@ -273,6 +221,28 @@ export class Config
     } else {
       throw new Error('Unsupported environment');
     }
+  }
+}
+
+export function readConfigFile(path: string): Config {
+  if (isNode) {
+    const fs = require('node:fs');
+
+    // This is the very lazy option, it should be calling code that takes the
+    // data structure and instantiates the correct object for each of the
+    // types of data stored in a .circleci/config.yml
+    const cfg = YAML.parse(fs.readFileSync(path, {encoding: "UTF-8"})) as CircleCIConfigShape;
+
+    const jobs = Object.keys(cfg.jobs).reduce((acc, k) => {
+      acc.push(BuildJobConfig.from(k, cfg.jobs[k]));
+      return acc
+    },
+      new Array<BuildJobConfig>());
+
+    return new Config(false, jobs);
+  }
+  else {
+    throw new Error('Unsupported environment');
   }
 }
 

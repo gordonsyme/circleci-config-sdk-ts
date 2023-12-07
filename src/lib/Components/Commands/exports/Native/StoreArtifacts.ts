@@ -29,7 +29,34 @@ export class StoreArtifacts implements Command {
   get generableType(): GenerableType {
     return GenerableType.STORE_ARTIFACTS;
   }
+
+  static from(d: any): StoreArtifacts {
+    if (!validateData(d)) {
+      throw new Error("Invalid store_artifacts command config");
+    }
+
+    return new StoreArtifacts(d.store_artifacts);
+  }
 }
+
+function validateData(d: any): d is StoreArtifactsCommandShape {
+  const {store_artifacts} = d;
+  if (!store_artifacts) {
+    return false;
+  }
+
+  const {path, destination} = store_artifacts;
+  if (typeof(path) !== 'string') {
+    return false;
+  }
+
+  if (destination && typeof(destination) !== 'string') {
+    return false;
+  }
+
+  return true;
+}
+
 /**
  * Command parameters for the StoreArtifacts command
  */

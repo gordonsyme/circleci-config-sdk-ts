@@ -33,4 +33,13 @@ export class MacOSExecutor extends Executor<MacOSResourceClass> {
   get executorLiteral(): ExecutorLiteral {
     return 'macos';
   }
+
+  static from(d: any, resource_class: string) {
+    if (!Object.hasOwn(d, 'xcode')) {
+      throw new Error("Invalid MacOSExecutor config data");
+    }
+    // It's not up to config processing to decide what's a valid resource class,
+    // at least not yet. So let's allow anything.
+    return new MacOSExecutor(d.xcode, resource_class as MacOSResourceClass);
+  }
 }

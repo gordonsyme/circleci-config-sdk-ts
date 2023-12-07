@@ -28,6 +28,28 @@ export class Attach implements Command {
   get generableType(): GenerableType {
     return GenerableType.ATTACH;
   }
+
+  static from(d: any): Attach {
+    if (!validateData(d)) {
+      throw new Error("Invalid attach_workspace command config");
+    }
+
+    return new Attach(d.attach_workspace);
+  }
+}
+
+function validateData(d: any): d is AttachCommandShape {
+  const {attach_workspace} = d;
+  if (!attach_workspace) {
+    return false;
+  }
+
+  const { at } = attach_workspace;
+  if (typeof (at) !== 'string') {
+    return false;
+  }
+
+  return true;
 }
 
 /**

@@ -1,9 +1,6 @@
 import { Executor } from '..';
-import { GenerableType } from '../../../Config/exports/Mapping';
-import { AnyExecutor } from '../../Job/types/Job.types';
 import { CustomParametersList } from '../../Parameters';
 import { ExecutorParameterLiteral } from '../../Parameters/types/CustomParameterLiterals.types';
-import { ReusableExecutor } from '../exports/ReusableExecutor';
 import { ExecutableProperties } from './ExecutorParameters.types';
 import {
   MachineResourceClassArm,
@@ -75,20 +72,6 @@ export type ReusableExecutorDependencies = {
   parametersList?: CustomParametersList<ExecutorParameterLiteral>;
   executor: Executor;
 };
-
-export type ExecutorSubtypeMap = {
-  [key in ExecutorUsageLiteral | 'windows']: {
-    generableType: GenerableType;
-    parse: ExecutorSubtypeParser;
-  };
-};
-
-export type ExecutorSubtypeParser = (
-  args: unknown,
-  resourceClass: AnyResourceClass,
-  properties?: ExecutableProperties,
-  reusableExecutors?: ReusableExecutor[],
-) => AnyExecutor;
 
 export {
   ExecutableParameters,

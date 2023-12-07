@@ -28,6 +28,32 @@ export class Persist implements Command {
   get generableType(): GenerableType {
     return GenerableType.PERSIST;
   }
+
+  static from(d: any): Persist {
+    if (!validateData(d)) {
+      throw new Error("Invalid persist_to_workspace command config");
+    }
+
+    return new Persist(d.persist_to_workspace);
+  }
+}
+
+function validateData(d: any): d is PersistCommandShape {
+  const {persist_to_workspace} = d;
+  if (!persist_to_workspace) {
+    return false;
+  }
+
+  const {root, paths} = persist_to_workspace;
+  if (typeof(root) !== 'string') {
+    return false;
+  }
+
+  if (!Array.isArray(paths) || paths.length === 0) {
+    return false;
+  }
+
+  return true;
 }
 
 /**

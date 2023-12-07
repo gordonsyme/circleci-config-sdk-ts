@@ -27,6 +27,44 @@ export class Save implements Command {
   get generableType(): GenerableType {
     return GenerableType.SAVE;
   }
+
+  static from(d: any): Save {
+    if (!validateData(d)) {
+      throw new Error("Invalid save_cache command config");
+    }
+
+    return new Save(d.save_cache);
+  }
+}
+
+function validateData(d: any): d is SaveCacheCommandShape {
+  const {save_cache} = d;
+  if (!save_cache) {
+    return false;
+  }
+
+  const {key, paths, when} = save_cache;
+
+  if (!key || typeof (key) !== 'string') {
+    return false;
+  }
+
+  const whenVals = new Set(['always', 'on_success', 'on_fail']);
+  if (when && !whenVals.has(when)) {
+    return false;
+  }
+
+  if (!paths || !Array.isArray(paths)) {
+    return false;
+  }
+
+  for (const path of paths) {
+    if (typeof (path) !== 'string') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**

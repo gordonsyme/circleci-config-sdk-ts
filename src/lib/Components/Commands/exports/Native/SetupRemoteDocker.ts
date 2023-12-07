@@ -42,6 +42,33 @@ export class SetupRemoteDocker implements Command {
     this.parameters.docker_layer_caching = enabled;
     return this;
   }
+
+  static from(d: any): SetupRemoteDocker {
+    if (!validateData(d)) {
+      throw new Error("Invalid setup_remote_docker command config");
+    }
+
+    return new SetupRemoteDocker(d.setup_remote_docker);
+  }
+}
+
+function validateData(d: any): d is SetupRemoteDockerCommandShape {
+  const {setup_remote_docker} = d;
+  if (!setup_remote_docker) {
+    return false;
+  }
+
+  const {version, docker_layer_caching} = d.setup_remote_docker;
+
+  if (typeof(version) !== 'string') {
+    return false;
+  }
+
+  if (docker_layer_caching && typeof(docker_layer_caching) !== 'boolean') {
+    return false
+  }
+
+  return true;
 }
 
 /**

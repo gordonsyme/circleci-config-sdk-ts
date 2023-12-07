@@ -1,7 +1,14 @@
 import { GenerableType } from '../../Config/exports/Mapping';
+import { AddSSHKeys, Checkout, Run, SetupRemoteDocker, StoreArtifacts, StoreTestResults } from '../Commands';
 import { Command } from '../Commands/exports/Command';
+import { Restore, Save } from '../Commands/exports/Native/Cache';
+import { Attach, Persist } from '../Commands/exports/Native/Workspace';
+import { CommandShape } from '../Commands/types/Command.types';
+import { DockerExecutor, MachineExecutor, MacOSExecutor } from '../Executors';
 import { Executor } from '../Executors/exports/Executor';
+import { ExecutorShape } from '../Executors/types/Executor.types';
 import { Executable } from '../Executors/types/ExecutorParameters.types';
+import { ReusableExecutorsShape, ReusedExecutorShape } from '../Executors/types/ReusableExecutor.types';
 import { Generable } from '../index';
 import {
   EnvironmentParameter,
@@ -10,65 +17,11 @@ import {
 } from '../Parameters/types';
 import {
   AnyExecutor,
+  JobCommonContents,
   JobContentsShape,
   JobOptionalProperties,
   JobsShape,
 } from './types/Job.types';
-
-export interface JobBase {
-  name: string;
-  type: string;
-  context: Set<string>;
-
-  getImplementation(): Generable | undefined;
-}
-
-export class BuildJob implements JobBase {
-  name: string;
-  context: Set<string> = new Set();
-  type: string;
-  implementation: BuildJobConfig;
-
-  constructor(name: string, implementation: BuildJobConfig) {
-    this.name = name;
-    this.implementation = implementation;
-    this.type = "build";
-  }
-
-  getImplementation(): Generable {
-    return this.implementation;
-  }
-
-  withContext(ctxt: string): BuildJob {
-    this.context.add(ctxt);
-    return this;
-  }
-
-  withConfig(c: BuildJobConfig): BuildJob {
-    this.implementation = c;
-    return this;
-  }
-}
-
-export class ApprovalJob implements JobBase {
-  name: string;
-  type: string;
-  context: Set<string> = new Set();
-
-  constructor(name: string) {
-    this.name = name;
-    this.type = "approval";
-  }
-
-  getImplementation(): undefined {
-      return undefined;
-  }
-
-  withContext(ctxt: string): this {
-    this.context.add(ctxt);
-    return this;
-  }
-}
 
 /**
  * Jobs define a collection of steps to be run within a given executor, and are orchestrated using Workflows.
@@ -182,4 +135,94 @@ export class BuildJobConfig implements Generable, Executable {
   get generableType(): GenerableType {
     return GenerableType.JOB;
   }
+
+  static from(n: string, d: any): BuildJobConfig {
+    if (!validateJobData(d)) {
+      throw new Error("Invalid job config data");
+    }
+
+    let executor: Executor = new DockerExecutor("DON'T DO THIS");
+    const data = d as JobCommonContents & ExecutorShape;
+    if (Object.hasOwn(d, 'docker')) {
+      executor = DockerExecutor.from(data.docker, data.resource_class);
+    }
+    /*else if (Object.hasOwn(d, 'machine')) {
+      executor = MachineExecutor.from(data.machine, data.resource_class);
+    }
+    else if (Object.hasOwn(d, 'macos')) {
+      executor = MacOSExecutor.from(data.macos, data.resource_class);
+    }
+    else {
+      throw new Error("Invalid job config data");
+    }*/
+
+    const config = new BuildJobConfig(n, executor);
+    d.steps.forEach((step) => {
+      config.addStep(commandFrom(step));
+    });
+    return config;
+  }
+}
+
+function validateJobData(d: any): d is JobContentsShape {
+  if (!Array.isArray(d.steps)) {
+    return false;
+  }
+  return true;
+}
+
+function commandFrom(d: any): Command {
+  const { add_ssh_keys,
+    attach_workspace,
+    checkout,
+    persist_to_workspace,
+    restore_cache,
+    run,
+    save_cache,
+    setup_remote_docker,
+    store_artifacts,
+    store_test_results } = d;
+
+  if (add_ssh_keys) {
+    return AddSSHKeys.from(d);
+  }
+
+  if (attach_workspace) {
+    return Attach.from(d);
+  }
+
+  if (checkout || d === 'checkout') {
+    return Checkout.from(d);
+  }
+
+  if (persist_to_workspace) {
+    return Persist.from(d);
+  }
+
+  if (restore_cache) {
+    return Restore.from(d);
+  }
+
+  if (run) {
+    return Run.from(d);
+  }
+
+  if (save_cache) {
+    return Save.from(d);
+  }
+
+  if (setup_remote_docker) {
+    return SetupRemoteDocker.from(d);
+  }
+
+  if (store_artifacts) {
+    return StoreArtifacts.from(d);
+  }
+
+  if (store_test_results) {
+    return StoreTestResults.from(d);
+  }
+
+  console.log("bad command data:" + d);
+  throw new Error("Invalid command config data");
 }

@@ -28,6 +28,38 @@ export class Restore implements Command {
   get generableType(): GenerableType {
     return GenerableType.RESTORE;
   }
+
+  static from(d: any): Restore {
+    if (!validateData(d)) {
+      throw new Error("Invalid restore_cache command config");
+    }
+
+    return new Restore(d.restore_cache);
+  }
+}
+
+function validateData(d: any): d is RestoreCacheCommandShape {
+  const {restore_cache} = d;
+  if (!restore_cache) {
+    return false;
+  }
+
+  const {key, keys} = restore_cache;
+  if (key) {
+    return typeof(key) === 'string';
+  }
+
+  if (!keys || !Array.isArray(keys)) {
+    return false;
+  }
+
+  for (const k of keys) {
+    if (typeof(k) !== 'string') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 /**

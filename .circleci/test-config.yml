@@ -1,0 +1,141 @@
+version: 2.0
+jobs:
+  build:
+    docker:
+      - image: python:2.7
+    working_directory: /gordon-test
+    steps:
+      - checkout
+
+      - run:
+          name: make some files
+          command: |
+            mkdir -p /tmp/my_workspace
+            echo "first artifact" > /tmp/my_workspace/first
+            echo "second artifact" > /tmp/my_workspace/second
+            mkdir -p /tmp/my_workspace/python
+            cp hello.py /tmp/my_workspace/python/
+
+      - persist_to_workspace:
+          root: /tmp/my_workspace
+          paths:
+            - "*"
+
+      - store_artifacts:
+          path: /tmp/my_workspace
+          destination: text-data
+
+  test:
+    docker:
+      - image: python:2.7
+    working_directory: /gordon-test
+    steps:
+      - attach_workspace:
+          at: /tmp/my_workspace
+
+      - run:
+          command: echo "third artifact!!" > /tmp/my_workspace/third
+          pwd: /
+
+      - run:
+          command: echo "overwritten first artifact!!" > /tmp/my_workspace/first
+          pwd: /
+
+      - persist_to_workspace:
+          root: /tmp/my_workspace
+          paths:
+            - third
+            - first
+
+      - run:
+          command: sleep 60
+
+  unreasonably-long-name-for-a-workflows-job-that-bitbucket-sees:
+    docker:
+      - image: python:2.7
+    working_directory: /gordon-test
+    steps:
+      - attach_workspace:
+          at: /tmp/my_workspace
+
+      - run:
+          command: |
+            echo "fourth artifact!!" > /tmp/my_workspace/fourth
+            echo "fifth artifact!!" > /tmp/my_workspace/fifth
+          pwd: /
+
+      - persist_to_workspace:
+          root: /tmp/my_workspace
+          paths:
+            - fourth
+            - fifth
+
+  write-no-data:
+    docker:
+      - image: python:2.7
+    working_directory: /gordon-test
+    steps:
+      - run:
+          command: echo "hi"
+          pwd: /
+
+  deploy:
+    docker:
+      - image: python:2.7
+    working_directory: /gordon-test
+    steps:
+      - run:
+          command: echo "deploying! (not really) "
+          pwd: /
+
+      - run:
+          name: "Workflow workspace env vars"
+          command: |
+            echo "CIRCLE_WORKFLOW_ID=${CIRCLE_WORKFLOW_ID}"
+            echo "CIRCLE_WORKFLOW_WORKSPACE_ID=${CIRCLE_WORKFLOW_WORKSPACE_ID}"
+            echo "CIRCLE_WORKFLOW_JOB_ID=${CIRCLE_WORKFLOW_JOB_ID}"
+            echo "CIRCLE_WORKFLOW_UPSTREAM_JOB_IDS=${CIRCLE_WORKFLOW_UPSTREAM_JOB_IDS}"
+            echo "CIRCLE_WORKFLOW_CONCURRENCY_MAP=${CIRCLE_WORKFLOW_CONCURRENCY_MAP}"
+          pwd: /
+
+      - attach_workspace:
+          at: my_workspace
+
+      - run: find /gordon-test/my_workspace
+
+      - run:
+          command: |
+            find /gordon-test/my_workspace -type f | while read _f; do
+              echo
+              echo ">>> ${_f} <<<"
+              cat ${_f}
+            done
+      - run:
+          name: Deploy
+          command: |
+            ssh -o StrictHostKeyChecking=no deploy_user@"${NGROK_HOST}" -p "${NGROK_PORT}" /home/vagrant/fake-deployment/bin/deploy "http://localhost:8080/api/v2/workflow/${CIRCLE_WORKFLOW_ID}/approve/${CIRCLE_WORKFLOW_JOB_ID}"
+
+workflows:
+  version: 2
+  breaking-workspaces:
+    jobs:
+      - approve:
+          type: approval
+      - build:
+          requires:
+            - approve
+      - write-no-data:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
+      - unreasonably-long-name-for-a-workflows-job-that-bitbucket-sees:
+          requires:
+            - build
+      - deploy:
+          type: approval
+          requires:
+            - test
+            - unreasonably-long-name-for-a-workflows-job-that-bitbucket-sees
+            - write-no-data

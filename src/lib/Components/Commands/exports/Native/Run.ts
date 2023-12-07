@@ -63,6 +63,75 @@ export class Run implements Command {
   get generableType(): GenerableType {
     return GenerableType.RUN;
   }
+
+  static from(d: any): Run {
+    if (validateShorthandData(d)) {
+      return new Run({command: d.run});
+    }
+    if (validateData(d)) {
+      return new Run(d.run);
+    }
+    throw new Error("Invalid run command config");
+  }
+}
+
+function validateShorthandData(d: any): d is RunCommandShorthandShape {
+  const {run} = d;
+  if (!run) {
+    return false;
+  }
+
+  return typeof(run) === 'string';
+}
+
+function validateData(d: any): d is RunCommandShape {
+  const {run} = d;
+  if (!run) {
+    return false;
+  }
+
+  const {command,
+    background,
+    no_output_timeout,
+    when,
+    shell,
+    environment,
+    working_directory} = run;
+
+  if (!command || typeof (command) !== 'string') {
+    return false;
+  }
+
+  if (background && typeof (background) !== 'boolean') {
+    return false;
+  }
+
+  if (no_output_timeout && typeof (no_output_timeout) !== 'string') {
+    return false;
+  }
+
+  const whenVals = new Set(['always', 'on_success', 'on_fail']);
+  if (when && !whenVals.has(when)) {
+    return false;
+  }
+
+  if (shell && typeof (shell) !== 'string') {
+    return false;
+  }
+
+  if (environment) {
+    for (const p in environment) {
+      if (typeof(p) !== 'string' || typeof(environment[p]) !== 'string') {
+        return false;
+      }
+    }
+  }
+
+  if (working_directory && typeof (working_directory) !== 'string') {
+    return false;
+  }
+
+  return true;
 }
 
 /**

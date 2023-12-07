@@ -20,7 +20,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "lib": ["es2017", "dom"],
+    "lib": ["es2022", "dom"],
     "types": ["@types/wicg-file-system-access", "node", "jest"]
   },
   "include": ["src/**/*.ts", "**/*.test.ts"],

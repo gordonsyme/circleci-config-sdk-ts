@@ -1,6 +1,5 @@
 import { Command } from '../../Commands/exports/Command';
 import { Executor } from '../../Executors';
-import { ReusedExecutor } from '../../Executors/exports/ReusedExecutor';
 import {
   AnyExecutorShape,
   ExecutableProperties,
@@ -12,11 +11,13 @@ import {
 } from '../../Parameters/types';
 import { JobParameterLiteral } from '../../Parameters/types/CustomParameterLiterals.types';
 
-export type JobContentsShape = {
+export type JobCommonContents = {
   steps: unknown[];
   parallelism?: number;
-} & AnyExecutorShape &
-  JobEnvironmentShape;
+}
+
+export type JobContentsShape = JobCommonContents &
+  AnyExecutorShape & JobEnvironmentShape;
 
 export type JobsShape = {
   [key: string]: JobContentsShape;
@@ -26,7 +27,7 @@ export type JobEnvironmentShape = {
   environment?: EnvironmentParameter;
 };
 
-export type AnyExecutor = ReusedExecutor | Executor;
+export type AnyExecutor = Executor;
 
 export type ParameterizedJobContents = JobContentsShape & {
   parameters: CustomParametersListShape;

@@ -29,6 +29,24 @@ export class StoreTestResults implements Command {
   get generableType(): GenerableType {
     return GenerableType.STORE_TEST_RESULTS;
   }
+
+  static from(d: any): StoreTestResults {
+    if (!validateData(d)) {
+      throw new Error("Invalid store_test_results command config");
+    }
+
+    return new StoreTestResults(d.store_test_results);
+  }
+}
+
+function validateData(d: any): d is StoreTestResultsCommandShape {
+  const {store_test_results} = d;
+  if (!store_test_results) {
+    return false;
+  }
+
+  const {path} = store_test_results;
+  return (typeof(path) === 'string');
 }
 
 /**

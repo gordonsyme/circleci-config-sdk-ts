@@ -3,7 +3,7 @@ import {
   DockerExecutorContentsShape,
   DockerResourceClass,
 } from '../types/DockerExecutor.types';
-import { ExecutorLiteral } from '../types/Executor.types';
+import { AnyResourceClass, AnyResourceClassBase, ExecutorLiteral } from '../types/Executor.types';
 import { DockerImage, DockerImageShape } from './DockerImage';
 import { Executor } from './Executor';
 
@@ -88,4 +88,24 @@ export class DockerExecutor extends Executor {
     this.serviceImages.push(image);
     return this;
   }
+
+  static from(d: any, resource_class: string): DockerExecutor {
+    if (!validateExecutorData(d)) {
+      throw new Error("Invalid Docker executor config data");
+    }
+
+    const primary = d[0];
+    const {image: _, ...properties} = primary;
+
+    return new DockerExecutor(primary.image,
+      resource_class as AnyResourceClassBase | undefined,
+      properties,
+      d.slice(1)
+    );
+  }
+}
+
+function validateExecutorData(d: any): d is DockerImageShape[] {
+  // FIXME Implement pls
+  return true;
 }
