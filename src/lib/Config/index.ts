@@ -177,39 +177,6 @@ export class Config
     return GenerableType.CONFIG;
   }
 
-  /**
-   * Agnostic method to save a config file to disk via Node or the Browser.
-   * Note: If you are accessing this method from the browser, it must be triggered by a user action.
-   * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#security}
-   * @param path - The path to write the config to. ONLY USED IN NODE.JS
-   */
-  async writeFile(path?: string) {
-    if (isBrowser) {
-      const newHandle = await window.showSaveFilePicker({
-        suggestedName: 'config.yml',
-        types: [
-          {
-            description: 'CircleCI Config YAML file',
-            accept: {
-              'text/yaml': ['.yml', '.yaml'],
-            },
-          },
-        ],
-      });
-      (await newHandle.createWritable()).write(this.stringify()).catch((e) => {
-        throw new Error(e);
-      });
-    } else if (isNode) {
-      const fsw = await import('fs/promises');
-      const filepath = path || 'config.yml';
-      // eslint-disable-next-line security/detect-non-literal-fs-filename
-      await fsw.writeFile(filepath, this.stringify()).catch((e) => {
-        throw new Error(e);
-      });
-    } else {
-      throw new Error('Unsupported environment');
-    }
-  }
 }
 
 export function readConfigFile(path: string): Config {
@@ -240,6 +207,23 @@ export function readConfigFile(path: string): Config {
     return new Config(false, jobConfigs, workflows);
   }
   else {
+    throw new Error('Unsupported environment');
+  }
+}
+
+/**
+  * Agnostic method to save a config file to disk via Node or the Browser.
+  * Note: If you are accessing this method from the browser, it must be triggered by a user action.
+  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#security}
+  * @param path - The path to write the config to. ONLY USED IN NODE.JS
+  */
+export function writeFile(path: string, content: any) {
+  if (isNode) {
+    const fsw = require('node:fs');
+    const filepath = path || 'config.yml';
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
+    fsw.writeFileSync(filepath, JSON.stringify(content), {encoding: "UTF-8"});
+  } else {
     throw new Error('Unsupported environment');
   }
 }
