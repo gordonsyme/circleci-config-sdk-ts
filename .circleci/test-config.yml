@@ -14,6 +14,7 @@ jobs:
             echo "first artifact" > /tmp/my_workspace/first
             echo "second artifact" > /tmp/my_workspace/second
             mkdir -p /tmp/my_workspace/python
+            echo "print(\"hello, world\")" > hello.py
             cp hello.py /tmp/my_workspace/python/
 
       - persist_to_workspace:
