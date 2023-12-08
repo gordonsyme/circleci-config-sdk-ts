@@ -1,6 +1,6 @@
 import { DockerExecutor } from "../src/lib/Components/Executors";
 import { BuildJobConfig } from "../src/lib/Components/Job";
-import { Workflow, Job, ApprovalJob, BuildJob} from "../src/lib/Components/Workflow/exports/NewWorkflow";
+import { Workflow, ApprovalJob, BuildJob} from "../src/lib/Components/Workflow/exports/NewWorkflow";
 import { readConfigFile } from "../src/lib/Config";
 
 describe("New Config SDK", () => {
