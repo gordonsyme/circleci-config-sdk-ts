@@ -3,12 +3,10 @@ import { AddSSHKeys, Checkout, Run, SetupRemoteDocker, StoreArtifacts, StoreTest
 import { Command } from '../Commands/exports/Command';
 import { Restore, Save } from '../Commands/exports/Native/Cache';
 import { Attach, Persist } from '../Commands/exports/Native/Workspace';
-import { CommandShape } from '../Commands/types/Command.types';
 import { DockerExecutor, MachineExecutor, MacOSExecutor } from '../Executors';
 import { Executor } from '../Executors/exports/Executor';
 import { ExecutorShape } from '../Executors/types/Executor.types';
 import { Executable } from '../Executors/types/ExecutorParameters.types';
-import { ReusableExecutorsShape, ReusedExecutorShape } from '../Executors/types/ReusableExecutor.types';
 import { Generable } from '../index';
 import {
   EnvironmentParameter,

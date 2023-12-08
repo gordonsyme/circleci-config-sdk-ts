@@ -2,8 +2,6 @@ import { isBrowser, isNode } from 'browser-or-node';
 import * as YAML from 'yaml';
 import { version as SDKVersion } from '../../../package-version.json';
 import { Generable } from '../Components';
-import { ReusableCommandShape } from '../Components/Commands/types/Command.types';
-import { ReusableExecutorsShape } from '../Components/Executors/types/ReusableExecutor.types';
 import { BuildJobConfig } from '../Components/Job';
 import { JobsShape } from '../Components/Job/types/Job.types';
 import { CustomParametersList } from '../Components/Parameters';
