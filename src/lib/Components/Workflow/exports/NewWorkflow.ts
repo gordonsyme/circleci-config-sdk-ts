@@ -3,7 +3,7 @@ import { GenerableType } from "../../../Config/exports/Mapping";
 import { CircleCIConfigShape } from "../../../Config/types";
 import { BuildJobConfig } from "../../Job";
 import { JobsShape } from "../../Job/types/Job.types";
-import { WorkflowContentsShape } from "../types";
+import { WorkflowContentsShape, WorkflowJobContentsShape } from "../types";
 
 type JobType = "build" | "approval" | "release";
 type ConfigType = BuildJobConfig | undefined;
@@ -133,11 +133,16 @@ export class Workflow implements Generable {
       const contexts = Array.from(j.context.values());
       const requires = Array.from(this.requiresFor(j));
 
+      const jobCfg: WorkflowJobContentsShape = {
+        context: contexts,
+        requires: requires
+      }
+      if (j.type === 'approval') {
+        jobCfg.type = "approval";
+      }
+
       return {
-        [j.name]: {
-          context: contexts,
-          requires: requires
-        }
+        [j.name]: jobCfg
       }
     })};
   }
