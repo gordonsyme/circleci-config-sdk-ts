@@ -231,7 +231,10 @@ export function readConfigFile(path: string): Config {
 
     const workflows = Object.keys(cfg.workflows).reduce(
       (acc, k) => {
-        acc.set(k, Workflow.from(k, cfg.workflows[k], jobConfigs));
+        // Avoid the version key, it maps to a number not to a workflow config
+        if (k !== 'version') {
+          acc.set(k, Workflow.from(k, cfg.workflows[k], jobConfigs));
+        }
         return acc;
       },
       new Map<string, Workflow>());
