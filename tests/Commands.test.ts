@@ -281,11 +281,11 @@ describe('Instantiate a Run command with 70 characters in the command string and
 // Test using Workspaces to Share Data Between Jobs and attach workflows workspace to current container.
 describe('Instantiate a Run command with 70 characters in the command string and ensure it remains a single string', () => {
   const myExecutor = new CircleCI.executors.DockerExecutor('cimg/base:stable');
-  const attachWorkspace = new CircleCI.Job('attach to workspace', myExecutor, [
+  const attachWorkspace = new CircleCI.BuildJobConfig('attach to workspace', myExecutor, [
     new CircleCI.commands.workspace.Attach({ at: '/tmp/workspace' }),
   ]);
 
-  const persistWorkspace = new CircleCI.Job(
+  const persistWorkspace = new CircleCI.BuildJobConfig(
     'persist to workspace',
     myExecutor,
     [

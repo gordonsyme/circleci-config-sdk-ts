@@ -11,8 +11,6 @@ import { Parameterized } from '../Components/Parameters/exports/Parameterized';
 import { PipelineParameterLiteral } from '../Components/Parameters/types/CustomParameterLiterals.types';
 import { Job, Workflow } from '../Components/Workflow/exports/NewWorkflow';
 import { WorkflowsShape } from '../Components/Workflow/types/Workflow.types';
-import { OrbImport } from '../Orb/exports/OrbImport';
-import { OrbImportsShape } from '../Orb/types/Orb.types';
 import { GenerableType } from './exports/Mapping';
 import { Pipeline } from './Pipeline';
 import {
@@ -55,8 +53,6 @@ export class Config
    */
   setup: boolean;
 
-  orbs?: OrbImport[];
-
   /**
    * Instantiate a new CircleCI config. Build up your config by adding components.
    * @param jobs - Instantiate with pre-defined Jobs.
@@ -68,13 +64,11 @@ export class Config
     jobs?: Map<string, BuildJobConfig>,
     workflows?: Map<string, Workflow>,
     parameters?: CustomParametersList<PipelineParameterLiteral>,
-    orbs?: OrbImport[],
   ) {
     this.setup = setup;
     this.jobs = jobs || new Map();
     this.workflows = workflows || new Map();
     this.parameters = parameters;
-    this.orbs = orbs;
   }
 
   /**
@@ -100,16 +94,6 @@ export class Config
    */
   addJob(job: BuildJobConfig): this {
     this.jobs.set(job.name, job);
-
-    return this;
-  }
-
-  importOrb(orb: OrbImport): this {
-    if (!this.orbs) {
-      this.orbs = [orb];
-    } else {
-      this.orbs.push(orb);
-    }
 
     return this;
   }
@@ -159,7 +143,6 @@ export class Config
     );
     const generatedJobs = generateList<JobsShape>(Array.from(this.jobs.values()), {}, flatten);
     const generatedParameters = this.parameters?.generate();
-    const generatedOrbs = generateList<OrbImportsShape>(this.orbs);
 
     const generatedConfig: CircleCIConfigShape = {
       version: this.version,
@@ -167,7 +150,6 @@ export class Config
       parameters: generatedParameters,
       jobs: generatedJobs,
       workflows: generatedWorkflows,
-      orbs: generatedOrbs,
     };
 
     return generatedConfig;

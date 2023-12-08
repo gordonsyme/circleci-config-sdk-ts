@@ -2,8 +2,8 @@ import { Generable } from "../..";
 import { GenerableType } from "../../../Config/exports/Mapping";
 import { CircleCIConfigShape } from "../../../Config/types";
 import { BuildJobConfig } from "../../Job";
-import { JobContentsShape, JobsShape } from "../../Job/types/Job.types";
-import { WorkflowContentsShape, WorkflowJobContentsShape, WorkflowJobShape, WorkflowsShape } from "../types";
+import { JobsShape } from "../../Job/types/Job.types";
+import { WorkflowContentsShape } from "../types";
 
 type JobType = "build" | "approval" | "release";
 type ConfigType = BuildJobConfig | undefined;

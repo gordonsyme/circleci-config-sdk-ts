@@ -133,7 +133,7 @@ describe('Instantiate Windows Executor and override shell', () => {
     steps: [],
   };
 
-  const job = new CircleCI.Job('test', windows, [], {
+  const job = new CircleCI.BuildJobConfig('test', windows, [], {
     shell: 'powershell.exe',
   });
 

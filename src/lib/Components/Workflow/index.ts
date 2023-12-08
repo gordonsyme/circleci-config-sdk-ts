@@ -1,5 +1,3 @@
-import { WorkflowJob } from './exports/WorkflowJob';
-import { WorkflowJobAbstract } from './exports/WorkflowJobAbstract';
-import { WorkflowJobApproval } from './exports/WorkflowJobApproval';
+import { Job, Workflow, BuildJob, ApprovalJob } from './exports/NewWorkflow';
 
-export { WorkflowJob, WorkflowJobApproval, WorkflowJobAbstract };
+export { Job, Workflow, BuildJob, ApprovalJob };

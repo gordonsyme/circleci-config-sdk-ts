@@ -36,12 +36,10 @@ describe("New Config SDK", () => {
       throw new Error("Expected a job called \"build\"");
     }
 
-    const build = new BuildJob("build")
-      .withConfig(buildConfig)
-      .withContext("org-global");
-
     const workflow = new Workflow("breaking-workspaces")
-      .addJob(build);
+      .addJob(new BuildJob("build")
+                .withConfig(buildConfig)
+                .withContext("org-global"));
     
     console.log("workflow is: " + JSON.stringify(workflow.generate()));
 
