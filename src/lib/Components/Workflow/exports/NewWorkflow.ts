@@ -114,7 +114,7 @@ export class Workflow implements Generable {
 
   generate(flatten?: boolean): CircleCIConfigShape {
     return {
-      version: 2,
+      version: 2.1,
       setup: false,
       jobs: this.jobs.reduce((acc, j) => {
         if (j.config) {
