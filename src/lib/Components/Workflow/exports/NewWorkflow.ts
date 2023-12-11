@@ -154,15 +154,36 @@ export class Workflow implements Generable {
     }
 
     const workflow = d.jobs.reduce((acc, j) => {
-      const {job, requires} = jobFrom(j, jobConfigs);
+      const { job, requires } = jobFrom(j, jobConfigs);
       acc.addJob(job, requires);
       return acc;
-    },
-    new Workflow(name));
+    }, new Workflow(name));
 
     checkGraph(workflow);
 
     return workflow;
+  }
+
+  static default(scriptName: string, image = "cimg/base:current"): Workflow {
+    const runScript = new BuildJob("run-script")
+      .withConfig(BuildJobConfig.from("build",
+        {
+          docker: [{ image: image }],
+          resource_class: "medium",
+          steps: [
+            "checkout",
+            {
+              run: {
+                name: `Run ${scriptName}`,
+                command: `bash "${scriptName}"`
+              }
+            }
+          ]
+        }
+      ));
+
+    return new Workflow("default")
+      .addJob(runScript);
   }
 }
 
