@@ -211,23 +211,6 @@ export function readConfigFile(path: string): Config {
   }
 }
 
-/**
-  * Agnostic method to save a config file to disk via Node or the Browser.
-  * Note: If you are accessing this method from the browser, it must be triggered by a user action.
-  * @see {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker#security}
-  * @param path - The path to write the config to. ONLY USED IN NODE.JS
-  */
-export function writeFile(path: string, content: any) {
-  if (isNode) {
-    const fsw = require('node:fs');
-    const filepath = path || 'config.yml';
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
-    fsw.writeFileSync(filepath, JSON.stringify(content), {encoding: "UTF-8"});
-  } else {
-    throw new Error('Unsupported environment');
-  }
-}
-
 function generateList<Shape>(
   listIn?: Generable[],
   failSafe?: Shape,

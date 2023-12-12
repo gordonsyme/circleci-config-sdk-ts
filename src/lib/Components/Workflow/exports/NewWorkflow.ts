@@ -1,3 +1,4 @@
+import { isNode } from 'browser-or-node';
 import { Generable } from "../..";
 import { GenerableType } from "../../../Config/exports/Mapping";
 import { CircleCIConfigShape } from "../../../Config/types";
@@ -110,6 +111,14 @@ export class Workflow implements Generable {
       }
     });
     return requires;
+  }
+
+  generateConfig() {
+    if (isNode) {
+      process.stdout.write(JSON.stringify(this.generate()));
+    } else {
+      throw new Error('Unsupported environment');
+    }
   }
 
   generate(flatten?: boolean): CircleCIConfigShape {
