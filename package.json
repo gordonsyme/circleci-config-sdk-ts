@@ -3,7 +3,6 @@
   "version": "0.0.0-development",
   "description": "An SDK for building CircleCI Configuration files with JavaScript.",
   "main": "dist/index.js",
-  "type": "module",
   "types": "dist/src/index.d.ts",
   "scripts": {
     "test": "npx jest",
