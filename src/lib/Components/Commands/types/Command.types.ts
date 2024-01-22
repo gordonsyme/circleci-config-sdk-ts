@@ -63,4 +63,4 @@ export type ReusableCommandDependencies = {
   steps: Command[];
 };
 
-export { Command };
+export { type Command };

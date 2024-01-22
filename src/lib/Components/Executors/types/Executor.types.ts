@@ -74,6 +74,6 @@ export type ReusableExecutorDependencies = {
 };
 
 export {
-  ExecutableParameters,
-  ExecutableProperties,
+  type ExecutableParameters,
+  type ExecutableProperties,
 } from './ExecutorParameters.types';

@@ -1,5 +1,5 @@
 import { GenerableType } from '../../../../Config/exports/Mapping';
-import { ListParameter, StringParameter } from '../../../Parameters/types';
+import { ListParameter } from '../../../Parameters/types';
 import { CommandParameters, CommandShape } from '../../types/Command.types';
 import { Command } from '../Command';
 
@@ -22,7 +22,7 @@ export class AddSSHKeys implements Command {
     return command as AddSSHKeysCommandShape;
   }
 
-  get name(): StringParameter {
+  get name(): string {
     return 'add_ssh_keys';
   }
 

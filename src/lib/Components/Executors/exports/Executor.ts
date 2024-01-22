@@ -30,6 +30,7 @@ export abstract class Executor<
   }
 
   generate(flatten?: boolean): ExecutorShape {
+    console.log(flatten)
     return {
       [this.executorLiteral]: this.generateContents(),
       resource_class: this.generateResourceClass,

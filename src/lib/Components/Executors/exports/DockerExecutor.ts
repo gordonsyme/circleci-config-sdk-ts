@@ -3,7 +3,7 @@ import {
   DockerExecutorContentsShape,
   DockerResourceClass,
 } from '../types/DockerExecutor.types';
-import { AnyResourceClass, AnyResourceClassBase, ExecutorLiteral } from '../types/Executor.types';
+import { AnyResourceClassBase, ExecutorLiteral } from '../types/Executor.types';
 import { DockerImage, DockerImageShape } from './DockerImage';
 import { Executor } from './Executor';
 
@@ -107,5 +107,7 @@ export class DockerExecutor extends Executor {
 
 function validateExecutorData(d: any): d is DockerImageShape[] {
   // FIXME Implement pls
+  // TODO: fix this..
+  console.log(d)
   return true;
 }

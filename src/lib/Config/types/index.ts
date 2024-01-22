@@ -58,4 +58,4 @@ export type ConfigDependencies = {
   parameterList?: CustomParametersList<AnyParameterLiteral>;
 };
 
-export { mapping, Generable };
+export { mapping, type Generable };

@@ -1,10 +1,10 @@
-import { isNode } from 'browser-or-node';
 import { Generable } from "../..";
 import { GenerableType } from "../../../Config/exports/Mapping";
 import { CircleCIConfigShape } from "../../../Config/types";
 import { BuildJobConfig } from "../../Job";
 import { JobsShape } from "../../Job/types/Job.types";
-import { WorkflowContentsShape, WorkflowJobContentsShape } from "../types";
+import { WorkflowContentsShape } from "../types/Workflow.types";
+import { WorkflowJobContentsShape } from "../types/WorkflowJob.types";
 
 type JobType = "build" | "approval" | "release";
 type ConfigType = BuildJobConfig | undefined;
@@ -114,11 +114,7 @@ export class Workflow implements Generable {
   }
 
   generateConfig() {
-    if (isNode) {
       process.stdout.write(JSON.stringify(this.generate()));
-    } else {
-      throw new Error('Unsupported environment');
-    }
   }
 
   generate(flatten?: boolean): CircleCIConfigShape {
@@ -138,6 +134,8 @@ export class Workflow implements Generable {
   }
 
   generateContents(flatten?: boolean): WorkflowContentsShape {
+    // TODO: fix this
+    console.log(flatten);
     return {jobs: this.jobs.map((j) => {
       const contexts = Array.from(j.context.values());
       const requires = Array.from(this.requiresFor(j));
@@ -162,7 +160,8 @@ export class Workflow implements Generable {
       throw new Error("Invalid workflow configuration: " + d);
     }
 
-    const workflow = d.jobs.reduce((acc, j) => {
+    // TODO: fix
+    const workflow = d.jobs.reduce((acc: any, j: any) => {
       const { job, requires } = jobFrom(j, jobConfigs);
       acc.addJob(job, requires);
       return acc;

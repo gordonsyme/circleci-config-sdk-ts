@@ -22,4 +22,4 @@ export type DockerImageMap = {
  */
 export type DockerResourceClass = AnyResourceClassBase;
 
-export { DockerImageShape, DockerImage, DockerAuth, DockerAuthAWS };
+export { type DockerImageShape, DockerImage, type DockerAuth, type DockerAuthAWS };

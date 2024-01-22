@@ -1,5 +1,4 @@
 import { Generable } from '../../index';
-import { StringParameter } from '../../Parameters/types';
 import { AnyCommandShape, CommandParameters } from '../types/Command.types';
 
 /**
@@ -9,7 +8,7 @@ export interface Command extends Generable {
   /**
    * The name of the CircleCI step, which will appear in the CircleCI UI.
    */
-  name: StringParameter;
+  name: string;
   /**
    * Step parameters
    */
