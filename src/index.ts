@@ -29,6 +29,7 @@ export * as workflow from './lib/Components/Workflow';
 export * as mapping from './lib/Config/exports/Mapping';
 
 // Top-level exports
+export { readConfigFile } from './lib/Config';
 export { BuildJobConfig } from './lib/Components/Job';
 export { Config } from './lib/Config';
 export { Pipeline } from './lib/Config/Pipeline';
