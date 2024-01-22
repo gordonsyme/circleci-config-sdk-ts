@@ -13,6 +13,7 @@ import {
   IntegerParameter,
   StringParameter,
 } from '../Parameters/types';
+import { Job, JobBase } from '../Workflow/exports/NewWorkflow';
 import {
   AnyExecutor,
   JobCommonContents,
@@ -20,6 +21,18 @@ import {
   JobOptionalProperties,
   JobsShape,
 } from './types/Job.types';
+
+
+export class BuildJob extends JobBase {
+  constructor(name: string) {
+    super(name, "build");
+  }
+
+  withConfig(cfg: BuildJobConfig): Job {
+    super.withConfig(cfg);
+    return this;
+  }
+}
 
 /**
  * Jobs define a collection of steps to be run within a given executor, and are orchestrated using Workflows.

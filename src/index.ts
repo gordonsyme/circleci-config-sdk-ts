@@ -30,7 +30,7 @@ export * as mapping from './lib/Config/exports/Mapping';
 
 // Top-level exports
 export { readConfigFile } from './lib/Config';
-export { BuildJobConfig } from './lib/Components/Job';
+export { BuildJobConfig, BuildJob } from './lib/Components/Job';
 export { Config } from './lib/Config';
 export { Pipeline } from './lib/Config/Pipeline';
-export { Workflow, Job, BuildJob, ApprovalJob } from './lib/Components/Workflow/exports/NewWorkflow';
+export { Workflow, Job, ApprovalJob } from './lib/Components/Workflow/exports/NewWorkflow';

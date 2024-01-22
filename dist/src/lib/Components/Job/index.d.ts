@@ -3,7 +3,12 @@ import { Command } from '../Commands/exports/Command';
 import { Executable } from '../Executors/types/ExecutorParameters.types';
 import { Generable } from '../index';
 import { EnvironmentParameter, IntegerParameter, StringParameter } from '../Parameters/types';
+import { Job, JobBase } from '../Workflow/exports/NewWorkflow';
 import { AnyExecutor, JobContentsShape, JobOptionalProperties, JobsShape } from './types/Job.types';
+export declare class BuildJob extends JobBase {
+    constructor(name: string);
+    withConfig(cfg: BuildJobConfig): Job;
+}
 /**
  * Jobs define a collection of steps to be run within a given executor, and are orchestrated using Workflows.
  */
