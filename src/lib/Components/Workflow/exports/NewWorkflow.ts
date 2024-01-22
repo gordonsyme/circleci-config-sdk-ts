@@ -21,7 +21,7 @@ export interface Job {
   withConfig(cfg: ConfigType): Job;
 }
 
-class JobBase implements Job {
+export class JobBase implements Job {
   name: string;
   type: JobType;
   context: Set<Context>;
