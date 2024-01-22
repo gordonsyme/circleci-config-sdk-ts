@@ -22,6 +22,7 @@ export * as workflow from './lib/Components/Workflow';
  * All type mapping enums
  */
 export * as mapping from './lib/Config/exports/Mapping';
+export { readConfigFile } from './lib/Config';
 export { BuildJobConfig } from './lib/Components/Job';
 export { Config } from './lib/Config';
 export { Pipeline } from './lib/Config/Pipeline';
