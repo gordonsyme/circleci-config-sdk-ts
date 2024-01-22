@@ -133,9 +133,8 @@ export class Workflow implements Generable {
     };
   }
 
-  generateContents(flatten?: boolean): WorkflowContentsShape {
+  generateContents(_flatten?: boolean): WorkflowContentsShape {
     // TODO: fix this
-    console.log(flatten);
     return {jobs: this.jobs.map((j) => {
       const contexts = Array.from(j.context.values());
       const requires = Array.from(this.requiresFor(j));

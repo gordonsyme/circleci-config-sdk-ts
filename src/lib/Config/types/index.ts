@@ -39,7 +39,7 @@ export type CircleCIConfigShape = {
   executors?: ReusableExecutorsShape;
   jobs: JobsShape;
   commands?: ReusableCommandShape;
-  workflows: WorkflowsShape;
+  workflows?: WorkflowsShape;
 };
 
 export type UnknownConfigShape = {

@@ -185,15 +185,29 @@ export function readConfigFile(path: string): Config {
     },
     new Map<string, BuildJobConfig>());
 
-    const workflows = Object.keys(cfg.workflows).reduce(
-      (acc, k) => {
+
+    // console.log(`this is before workflows..: ${jobConfigs}`)
+
+
+    // console.log(`config at this point...: ${JSON.stringify(cfg)}`)
+    // console.log(`These are the keys ${Object.keys(cfg)}`)
+    // console.log(`config workflows...: ${cfg.workflows}`)
+
+    // There coulod be no workflows...
+    const configWorkflows: WorkflowsShape = cfg.workflows || {};
+
+    const workflows = Object.keys(configWorkflows).reduce(
+      (acc, k: string) => {
         // Avoid the version key, it maps to a number not to a workflow config
         if (k !== 'version') {
-          acc.set(k, Workflow.from(k, cfg.workflows[k], jobConfigs));
+          // console.log(`this is the acc at failing: ${acc} and ${k}`)
+          acc.set(k, Workflow.from(k, configWorkflows[k], jobConfigs));
         }
         return acc;
       },
       new Map<string, Workflow>());
+
+      // console.log(`this is just before returning..: ${workflows}`)
 
     return new Config(false, jobConfigs, workflows);
   }

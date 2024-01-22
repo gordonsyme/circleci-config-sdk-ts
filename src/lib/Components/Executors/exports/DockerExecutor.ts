@@ -108,6 +108,5 @@ export class DockerExecutor extends Executor {
 function validateExecutorData(d: any): d is DockerImageShape[] {
   // FIXME Implement pls
   // TODO: fix this..
-  console.log(d)
-  return true;
+  return d ? true : true;
 }
